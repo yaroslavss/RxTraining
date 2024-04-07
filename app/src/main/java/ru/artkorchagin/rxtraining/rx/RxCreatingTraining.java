@@ -1,5 +1,7 @@
 package ru.artkorchagin.rxtraining.rx;
 
+import android.annotation.SuppressLint;
+
 import io.reactivex.Observable;
 import ru.artkorchagin.rxtraining.exceptions.ExpectedException;
 import ru.artkorchagin.rxtraining.exceptions.NotImplementedException;
@@ -20,7 +22,7 @@ public class RxCreatingTraining {
      * @return {@link Observable}, который эммитит только значение {@code value}
      */
     public Observable<Integer> valueToObservable(int value) {
-        throw new NotImplementedException();
+        return Observable.just(value);
     }
 
     /**
@@ -30,7 +32,7 @@ public class RxCreatingTraining {
      * @return {@link Observable}, который эммитит по порядку все строки из заданного массива
      */
     public Observable<String> arrayToObservable(String[] array) {
-        throw new NotImplementedException();
+        return Observable.fromArray(array);
     }
 
     /**
@@ -41,7 +43,7 @@ public class RxCreatingTraining {
      * {@link #expensiveMethod()}
      */
     public Observable<Integer> expensiveMethodResult() {
-        throw new NotImplementedException();
+        return Observable.defer(() -> Observable.just(expensiveMethod()));
     }
 
     /**
@@ -54,8 +56,24 @@ public class RxCreatingTraining {
      * последующий с интервалом {@code period} миллисекунд.
      * {@code onError} или {@code onComplete} не должны вызваться.
      */
+    @SuppressLint("CheckResult")
     public Observable<Long> increasingSequenceWithDelays(long initialDelay, long period) {
-        throw new NotImplementedException();
+        final Long[] l = {0L};
+        return Observable.create(o -> {
+            try {
+                Thread.sleep(initialDelay);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (o.isDisposed()) {
+                return;
+            }
+            while (l[0] < 3L) {
+                o.onNext(l[0]);
+                l[0] = l[0] + 1;
+                Thread.sleep(period);
+            }
+        });
     }
 
     /**
@@ -66,7 +84,10 @@ public class RxCreatingTraining {
      * задержкой {@code delay}
      */
     public Observable<Long> delayedZero(long delay) {
-        throw new NotImplementedException();
+        return Observable.defer(() -> {
+            Thread.sleep(delay);
+            return Observable.just(0L);
+        });
     }
 
     /**
