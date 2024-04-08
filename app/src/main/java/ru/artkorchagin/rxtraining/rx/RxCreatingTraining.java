@@ -2,9 +2,10 @@ package ru.artkorchagin.rxtraining.rx;
 
 import android.annotation.SuppressLint;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
 import ru.artkorchagin.rxtraining.exceptions.ExpectedException;
-import ru.artkorchagin.rxtraining.exceptions.NotImplementedException;
 
 /**
  * @author Arthur Korchagin (artur.korchagin@simbirsoft.com)
@@ -58,21 +59,13 @@ public class RxCreatingTraining {
      */
     @SuppressLint("CheckResult")
     public Observable<Long> increasingSequenceWithDelays(long initialDelay, long period) {
-        final Long[] l = {0L};
         return Observable.create(o -> {
-            try {
-                Thread.sleep(initialDelay);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (o.isDisposed()) {
-                return;
-            }
-            while (l[0] < 3L) {
-                o.onNext(l[0]);
-                l[0] = l[0] + 1;
-                Thread.sleep(period);
-            }
+            Thread.sleep(initialDelay);
+            o.onNext(0L);
+            Thread.sleep(period);
+            o.onNext(1L);
+            Thread.sleep(period);
+            o.onNext(2L);
         });
     }
 
@@ -84,10 +77,8 @@ public class RxCreatingTraining {
      * задержкой {@code delay}
      */
     public Observable<Long> delayedZero(long delay) {
-        return Observable.defer(() -> {
-            Thread.sleep(delay);
-            return Observable.just(0L);
-        });
+        return Observable.just(0L)
+                .delay(delay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -101,7 +92,11 @@ public class RxCreatingTraining {
      * 3. {@link #unstableMethod(boolean)}
      */
     public Observable<Integer> combinationExpensiveMethods(final boolean unstableCondition) {
-        throw new NotImplementedException();
+        return Observable.create(o -> {
+            o.onNext(expensiveMethod());
+            o.onNext(alternativeExpensiveMethod());
+            o.onNext(unstableMethod(unstableCondition));
+        });
     }
 
     /**
@@ -111,7 +106,8 @@ public class RxCreatingTraining {
      * {@code onComplete} или {@code onError}
      */
     public Observable<Integer> withoutAnyEvents() {
-        throw new NotImplementedException();
+        return Observable.create(o -> {
+        });
     }
 
     /**
@@ -120,7 +116,7 @@ public class RxCreatingTraining {
      * @return {@link Observable} который не эммитит значения, вызывается только {@code onComplete}
      */
     public Observable<Integer> onlyComplete() {
-        throw new NotImplementedException();
+        return Observable.empty();
     }
 
     /**
@@ -130,7 +126,7 @@ public class RxCreatingTraining {
      * ошибка {@link ExpectedException}
      */
     public Observable<Integer> onlyError() {
-        throw new NotImplementedException();
+        return Observable.create(o -> o.onError(new ExpectedException()));
     }
 
     /* Вспомогательные методы */
