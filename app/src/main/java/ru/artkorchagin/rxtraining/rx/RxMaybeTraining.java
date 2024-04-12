@@ -44,9 +44,7 @@ public class RxMaybeTraining {
      * последовательность пустая
      */
     Maybe<Integer> calculateSumOfValues(Observable<Integer> integerObservable) {
-        return integerObservable.reduce(0, Integer::sum).flatMapMaybe(value -> {
-            return value == 0 ? Maybe.empty() : Maybe.just(value);
-        });
+        return integerObservable.reduce(Integer::sum);
     }
 
     /**
