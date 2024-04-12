@@ -46,7 +46,7 @@ public class RxSingleTraining {
      * пустая
      */
     Single<Integer> calculateSumOfValues(Observable<Integer> integerObservable) {
-        return integerObservable.scan(Integer::sum).last(0);
+        return integerObservable.reduce(0, Integer::sum);
     }
 
     /**
@@ -68,9 +68,7 @@ public class RxSingleTraining {
      * {@code integerSingle} положительны, {@code false} если есть отрицательные элементы
      */
     Single<Boolean> allElementsIsPositive(Observable<Integer> integerSingle) {
-        return integerSingle.reduce(true, (acc, x) -> {
-            return (x > 0 && acc);
-        });
+        return integerSingle.all(i -> i > 0);
     }
 
 }

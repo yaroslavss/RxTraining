@@ -57,7 +57,7 @@ public class RxMaybeTraining {
      * {@code defaultValue} если последовательность пустая
      */
     Single<Integer> leastOneElement(Maybe<Integer> integerMaybe, int defaultValue) {
-        return integerMaybe.defaultIfEmpty(defaultValue).toSingle();
+        return integerMaybe.toSingle(defaultValue);
     }
 
 }

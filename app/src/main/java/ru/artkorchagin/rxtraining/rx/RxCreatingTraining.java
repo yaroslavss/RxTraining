@@ -59,14 +59,7 @@ public class RxCreatingTraining {
      */
     @SuppressLint("CheckResult")
     public Observable<Long> increasingSequenceWithDelays(long initialDelay, long period) {
-        return Observable.create(o -> {
-            Thread.sleep(initialDelay);
-            o.onNext(0L);
-            Thread.sleep(period);
-            o.onNext(1L);
-            Thread.sleep(period);
-            o.onNext(2L);
-        });
+        return Observable.interval(initialDelay, period, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -77,8 +70,7 @@ public class RxCreatingTraining {
      * задержкой {@code delay}
      */
     public Observable<Long> delayedZero(long delay) {
-        return Observable.just(0L)
-                .delay(delay, TimeUnit.MILLISECONDS);
+        return Observable.timer(delay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -106,8 +98,7 @@ public class RxCreatingTraining {
      * {@code onComplete} или {@code onError}
      */
     public Observable<Integer> withoutAnyEvents() {
-        return Observable.create(o -> {
-        });
+        return Observable.never();
     }
 
     /**
